@@ -1,0 +1,16 @@
+<div class="page">
+  <div class="form-card">
+    <h2>Create New Grocery List</h2>
+    <form action="/lists" method="POST">
+      <div class="form-group">
+        <label for="name">List Name</label>
+        <input type="text" id="name" name="name" placeholder="Enter list name" required />
+      </div>
+      <div class="form-group">
+        <label for="description">Description (optional)</label>
+        <textarea id="description" name="description" placeholder="Enter description"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width: 100%;">Create List</button>
+    </form>
+  </div>
+</div>
