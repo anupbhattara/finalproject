@@ -55,6 +55,30 @@ function createDatabaseManager(dbPath) {
         }
       },
 
+      // Get all grocery lists ordered by most recently created
+      getAllLists: () => {
+        ensureConnected();
+        return database.prepare(
+          'SELECT id, name, description, created_at FROM lists ORDER BY created_at DESC'
+        ).all();
+      },
+
+      // Create a new grocery list and return the inserted row id
+      createList: (name, description) => {
+        ensureConnected();
+        const stmt = database.prepare(
+          'INSERT INTO lists (name, description) VALUES (?, ?)'
+        );
+        const result = stmt.run(name, description || null);
+        return result.lastInsertRowid;
+      },
+
+      // Delete a list by id (CASCADE removes its items too)
+      deleteList: (id) => {
+        ensureConnected();
+        database.prepare('DELETE FROM lists WHERE id = ?').run(id);
+      },
+
     }
   };
 }
