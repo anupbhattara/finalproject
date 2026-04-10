@@ -2,10 +2,10 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
-  fullyParallel: true, // Run tests serially to avoid database conflicts
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: 5, // Multiple workers to run tests in parallel
+  workers: 1,
   reporter: 'html',
 
   use: {
@@ -35,7 +35,6 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
     env: {
-      // Use dedicated test database for all tests
       DATA_DIR: 'test-data',
       DB_NAME: 'test-database.sqlite'
     },

@@ -1,0 +1,39 @@
+<div class="page">
+  <div class="page-header">
+    <h2>My Grocery Lists</h2>
+    <a href="/lists/new" class="btn btn-primary">+ Create New List</a>
+  </div>
+
+  <% if (lists.length === 0) { %>
+    <div style="text-align:center; padding: 48px 0; color: #888; background:#fff; border:1px solid #e0e0e0; border-radius:4px;">
+      <p style="font-size:14px;">No lists yet. Create your first grocery list!</p>
+      <a href="/lists/new" class="btn btn-primary" style="margin-top:16px;">Create a List</a>
+    </div>
+  <% } else { %>
+    <table>
+      <thead>
+        <tr>
+          <th>List Name</th>
+          <th>Description</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% lists.forEach(function(list) { %>
+          <tr>
+            <td><strong><%= list.name %></strong></td>
+            <td><%= list.description || '—' %></td>
+            <td><%= new Date(list.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %></td>
+            <td style="display:flex; gap:8px;">
+              <a href="/lists/<%= list.id %>" class="btn btn-outline btn-sm">View</a>
+              <form action="/lists/<%= list.id %>/delete" method="POST" style="display:inline;" onsubmit="return confirm('Delete this list and all its items?')">
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</div>

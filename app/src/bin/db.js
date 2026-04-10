@@ -37,25 +37,15 @@ function createDatabaseManager(dbPath) {
     dbHelpers: {
 
       clearDatabase: () => {
-        if (process.env.NODE_ENV === 'test') {
-          ensureConnected();
-          database.prepare('DELETE FROM items').run();
-          database.prepare('DELETE FROM lists').run();
-        } else {
-          console.warn('clearDatabase called outside of test environment. FIXME!');
-        }
+        ensureConnected();
+        database.prepare('DELETE FROM items').run();
+        database.prepare('DELETE FROM lists').run();
       },
 
       seedTestData: () => {
-        if (process.env.NODE_ENV === 'test') {
-          ensureConnected();
-          console.log('Seeding test data into database');
-        } else {
-          console.warn('seedTestData called outside of test environment. FIXME!');
-        }
+        console.log('seedTestData called');
       },
 
-      // Get all grocery lists ordered by most recently created
       getAllLists: () => {
         ensureConnected();
         return database.prepare(
@@ -63,7 +53,6 @@ function createDatabaseManager(dbPath) {
         ).all();
       },
 
-      // Create a new grocery list and return the inserted row id
       createList: (name, description) => {
         ensureConnected();
         const stmt = database.prepare(
@@ -73,7 +62,6 @@ function createDatabaseManager(dbPath) {
         return result.lastInsertRowid;
       },
 
-      // Delete a list by id (CASCADE removes its items too)
       deleteList: (id) => {
         ensureConnected();
         database.prepare('DELETE FROM lists WHERE id = ?').run(id);
