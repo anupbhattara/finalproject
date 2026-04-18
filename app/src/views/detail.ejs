@@ -1,0 +1,96 @@
+<div class="page">
+  <div class="page-header">
+    <h2>
+      <%= list.name %>
+    </h2>
+    <a href="/lists" class="btn btn-outline">← Back to Lists</a>
+  </div>
+
+  <% if (list.description) { %>
+    <p style="color:#666; font-size:13px; margin-bottom:20px;">
+      <%= list.description %>
+    </p>
+    <% } %>
+
+      <!-- Add Item Form -->
+      <div class="inline-form">
+        <h3>Add Item</h3>
+        <form action="/lists/<%= list.id %>/items" method="POST">
+          <div class="inline-form-row">
+            <div class="form-group">
+              <label for="name">Item Name</label>
+              <input type="text" id="name" name="name" placeholder="e.g. Milk" required />
+            </div>
+            <div class="form-group">
+              <label for="category">Category</label>
+              <select id="category" name="category">
+                <option value="Produce">Produce</option>
+                <option value="Dairy">Dairy</option>
+                <option value="Meat">Meat</option>
+                <option value="Frozen">Frozen</option>
+                <option value="Pantry">Pantry</option>
+                <option value="Bakery">Bakery</option>
+                <option value="Other" selected>Other</option>
+              </select>
+            </div>
+            <div class="form-group" style="max-width:90px;">
+              <label for="quantity">Qty</label>
+              <input type="number" id="quantity" name="quantity" value="1" min="1" />
+            </div>
+            <div class="form-group" style="flex:0;">
+              <label style="visibility:hidden;">Add</label>
+              <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Items Table -->
+      <% if (items.length===0) { %>
+        <div
+          style="text-align:center; padding:40px 0; color:#888; background:#fff; border:1px solid #e0e0e0; border-radius:4px;">
+          <p style="font-size:13px;">No items yet. Add your first item above!</p>
+        </div>
+        <% } else { %>
+          <table>
+            <thead>
+              <tr>
+                <th>Item Name</th>
+                <th>Category</th>
+                <th>Qty</th>
+                <th>Purchased</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% items.forEach(function(item) { %>
+                <tr class="<%= item.purchased ? 'purchased' : '' %>">
+                  <td>
+                    <%= item.name %>
+                  </td>
+                  <td>
+                    <%= item.category %>
+                  </td>
+                  <td>
+                    <%= item.quantity %>
+                  </td>
+                  <td>
+                    <form action="/items/<%= item.id %>/toggle" method="POST" style="display:inline;">
+                      <input type="hidden" name="listId" value="<%= list.id %>" />
+                      <input type="checkbox" onchange="this.form.submit()" <%=item.purchased ? 'checked' : '' %>
+                      style="cursor:pointer; width:16px; height:16px;" />
+                    </form>
+                  </td>
+                  <td>
+                    <form action="/items/<%= item.id %>/delete" method="POST" style="display:inline;"
+                      onsubmit="return confirm('Delete this item?')">
+                      <input type="hidden" name="listId" value="<%= list.id %>" />
+                      <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+                <% }) %>
+            </tbody>
+          </table>
+          <% } %>
+</div>

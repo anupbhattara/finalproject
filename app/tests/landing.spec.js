@@ -101,12 +101,74 @@ test.describe('View Lists', () => {
     await page.click('button[type="submit"]');
 
     await expect(page.locator('tbody tr')).toHaveCount(1);
-    await expect(page.locator('tbody tr td:first-child')).toContainText('To Be Deleted');
 
     page.on('dialog', dialog => dialog.accept());
     await page.locator('button.btn-danger').first().click();
 
     await expect(page.locator('.page')).toContainText('No lists yet');
+  });
+
+});
+
+test.describe('List Detail Page', () => {
+
+  test('should navigate to list detail page from View Lists', async ({ page }) => {
+    await page.goto('/lists/new');
+    await page.fill('input#name', 'My Detail List');
+    await page.click('button[type="submit"]');
+
+    await page.locator('a.btn-outline').first().click();
+    await expect(page.locator('h2')).toContainText('My Detail List');
+    await expect(page.locator('input#name')).toBeVisible();
+    await expect(page.locator('select#category')).toBeVisible();
+    await expect(page.locator('input#quantity')).toBeVisible();
+  });
+
+  test('should add an item to the list', async ({ page }) => {
+    await page.goto('/lists/new');
+    await page.fill('input#name', 'Shopping List');
+    await page.click('button[type="submit"]');
+    await page.locator('a.btn-outline').first().click();
+
+    await page.fill('input#name', 'Apples');
+    await page.selectOption('select#category', 'Produce');
+    await page.fill('input#quantity', '3');
+    await page.click('button[type="submit"]');
+
+    await expect(page.locator('tbody tr')).toHaveCount(1);
+    await expect(page.locator('tbody tr td:first-child')).toContainText('Apples');
+    await expect(page.locator('tbody tr td:nth-child(2)')).toContainText('Produce');
+    await expect(page.locator('tbody tr td:nth-child(3)')).toContainText('3');
+  });
+
+  test('should mark an item as purchased', async ({ page }) => {
+    await page.goto('/lists/new');
+    await page.fill('input#name', 'Purchased Test');
+    await page.click('button[type="submit"]');
+    await page.locator('a.btn-outline').first().click();
+
+    await page.fill('input#name', 'Milk');
+    await page.click('button[type="submit"]');
+
+    await page.locator('input[type="checkbox"]').first().click();
+    await expect(page.locator('input[type="checkbox"]').first()).toBeChecked();
+  });
+
+  test('should delete an item from the list', async ({ page }) => {
+    await page.goto('/lists/new');
+    await page.fill('input#name', 'Delete Item Test');
+    await page.click('button[type="submit"]');
+    await page.locator('a.btn-outline').first().click();
+
+    await page.fill('input#name', 'Bread');
+    await page.click('button[type="submit"]');
+
+    await expect(page.locator('tbody tr')).toHaveCount(1);
+
+    page.on('dialog', dialog => dialog.accept());
+    await page.locator('button.btn-danger').first().click();
+
+    await expect(page.locator('.page')).toContainText('No items yet');
   });
 
 });

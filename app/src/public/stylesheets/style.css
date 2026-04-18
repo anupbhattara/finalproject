@@ -288,3 +288,7 @@ footer p {
   font-size: 12px;
   color: #999;
 }
+
+tr.purchased td {
+  opacity: 0.5;
+}
