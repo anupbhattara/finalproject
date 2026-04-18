@@ -45,4 +45,54 @@ router.post('/lists/:id/delete', function(req, res, next) {
   }
 });
 
+// List detail page - shows items for a specific list
+router.get('/lists/:id', function(req, res, next) {
+  try {
+    const list = req.db.getListById(req.params.id);
+    if (!list) {
+      return res.status(404).send('List not found');
+    }
+    const items = req.db.getItemsByListId(req.params.id);
+    res.render('detail', { title: `${list.name} - Grocery Flow`, list, items });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Add item to a list
+router.post('/lists/:id/items', function(req, res, next) {
+  try {
+    const { name, category, quantity } = req.body;
+    if (!name || name.trim() === '') {
+      return res.status(400).send('Item name is required');
+    }
+    req.db.addItem(req.params.id, name.trim(), category, parseInt(quantity) || 1);
+    res.redirect(`/lists/${req.params.id}`);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Toggle purchased status
+router.post('/items/:itemId/toggle', function(req, res, next) {
+  try {
+    const { listId } = req.body;
+    req.db.togglePurchased(req.params.itemId);
+    res.redirect(`/lists/${listId}`);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Delete an item
+router.post('/items/:itemId/delete', function(req, res, next) {
+  try {
+    const { listId } = req.body;
+    req.db.deleteItem(req.params.itemId);
+    res.redirect(`/lists/${listId}`);
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;
