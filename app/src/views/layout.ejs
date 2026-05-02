@@ -6,6 +6,47 @@
   <title><%= typeof title !== 'undefined' ? title : 'Grocery Flow' %></title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="/stylesheets/style.css" />
+  <style>
+    /* ── Confirm Modal ── */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.25);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-backdrop.active {
+      display: flex;
+    }
+    .modal {
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      padding: 28px 32px;
+      max-width: 360px;
+      width: 90%;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+    }
+    .modal h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #111;
+    }
+    .modal p {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+  </style>
 </head>
 <body>
   <header class="navbar">
@@ -25,8 +66,71 @@
     <p>&copy; <span id="year"></span> Grocery Flow</p>
   </footer>
 
+  <!-- Confirm Modal -->
+  <div class="modal-backdrop" id="confirmModal">
+    <div class="modal">
+      <h3 id="modalTitle">Confirm Delete</h3>
+      <p id="modalMessage">Are you sure you want to delete this?</p>
+      <div class="modal-actions">
+        <button class="btn btn-outline" id="modalCancel">Cancel</button>
+        <button class="btn btn-danger" id="modalConfirm">Delete</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Modal logic
+    const modal = document.getElementById('confirmModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalCancel = document.getElementById('modalCancel');
+    const modalConfirm = document.getElementById('modalConfirm');
+    let pendingForm = null;
+
+    function showConfirm(form, title, message) {
+      pendingForm = form;
+      modalTitle.textContent = title || 'Confirm Delete';
+      modalMessage.textContent = message || 'Are you sure you want to delete this?';
+      modal.classList.add('active');
+    }
+
+    modalCancel.addEventListener('click', () => {
+      modal.classList.remove('active');
+      pendingForm = null;
+    });
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('active');
+        pendingForm = null;
+      }
+    });
+
+    modalConfirm.addEventListener('click', () => {
+      if (pendingForm) {
+        pendingForm.submit();
+      }
+      modal.classList.remove('active');
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        modal.classList.remove('active');
+        pendingForm = null;
+      }
+    });
+
+    // Intercept all delete forms
+    document.querySelectorAll('form[data-confirm]').forEach(form => {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = form.dataset.confirmTitle || 'Confirm Delete';
+        const message = form.dataset.confirm;
+        showConfirm(form, title, message);
+      });
+    });
   </script>
 </body>
 </html>

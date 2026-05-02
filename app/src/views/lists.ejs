@@ -27,7 +27,13 @@
             <td><%= new Date(list.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %></td>
             <td style="display:flex; gap:8px;">
               <a href="/lists/<%= list.id %>" class="btn btn-outline btn-sm">View</a>
-              <form action="/lists/<%= list.id %>/delete" method="POST" style="display:inline;" onsubmit="return confirm('Delete this list and all its items?')">
+              <form
+                action="/lists/<%= list.id %>/delete"
+                method="POST"
+                style="display:inline;"
+                data-confirm="This will permanently delete the list and all its items."
+                data-confirm-title="Delete &ldquo;<%= list.name %>&rdquo;?"
+              >
                 <button type="submit" class="btn btn-danger btn-sm">Delete</button>
               </form>
             </td>
